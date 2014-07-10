@@ -1,6 +1,6 @@
 {
   "name": "vagrant-git",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "dependencies": {
     "minimist": "^0.2.0",

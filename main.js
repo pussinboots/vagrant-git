@@ -5,27 +5,34 @@ var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
 var repoFolder = "./";
+var gitProtocolHttps="https://github.com/"
+var gitProtocolGit="git@github.com:"
 
-function fetchRepo(owner, repo, type, callback) {
+function getGitProtocol(options) {
+	if (options.g)
+		if(options.g === "git")
+			return gitProtocolGit;
+		else if(options.g === "https")
+			return gitProtocolHttps;
+	return gitProtocolGit;
+}
+
+function fetchRepo(options, owner, repo, type, callback) {
 	if (fs.existsSync(repoFolder +repo)) {
 		console.log('git pull on ' + repo + ' ' + type);
 		var repository = git(repoFolder+repo);
-    	var repoProcess = repository.pull('master', function(err, _repo) {
+    	repository.pull('master', function(err, _repo) {
     		if(err) sys.puts(err);
     		if(callback)
     			callback(repo)
 	  	})
-	  	repoProcess.stdout.on('data', function(data) { process.stdout.write(data); });
-		repoProcess.stderr.on('data', function(data) { process.stderr.write(data); });
 	} else {
-		console.log('git clone https://github.com/' + owner + '/' + repo + ' ' + type);
-		var cloneProcess = git.clone("https://github.com/" + owner+ "/" + repo, repo, function(err, _repo) {
+		console.log('git clone ' + getGitProtocol(options) + owner + '/' + repo + ' ' + type);
+		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, repo, function(err, _repo) {
 			if(err) sys.puts(err);
 			if(callback)
     			callback(repo)
 	  	})
-	  	cloneProcess.stdout.on('data', function(data) { process.stdout.write(data); });
-		cloneProcess.stderr.on('data', function(data) { process.stderr.write(data); });
   	}	
 }
 
@@ -54,11 +61,11 @@ function displayVGitYml(repo) {
 	if (vgitYml.password) console.log('password: ' + vgitYml.password + '\n')
 }
 
-function perform(owner, repo, vagrantCmd) {
+function perform(options, owner, repo, vagrantCmd) {
 				console.log('####################### git output ##########################');
-	fetchRepo(owner, repo, 'project', function(repo) {
+	fetchRepo(options, owner, repo, 'project', function(repo) {
 		var vagrantRepo = getVagrantRepo(repo);
-		fetchRepo(vagrantRepo.owner, vagrantRepo.repo, 'vagrant project', function(repo){
+		fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, 'vagrant project', function(repo){
 			console.log('#############################################################');
 			console.log('##################### vagrant project info ##################');
 			displayVGitYml(repo);
@@ -90,16 +97,16 @@ function Cli(argv) {
 		console.log('owner ' + owner + ' repo ' + repo);
 		if (options.up) {
 			console.log('vagrant up');
-			perform(owner, repo, "up");
+			perform(options, owner, repo, "up");
 		} else if (options.prov) {
 			console.log('vagrant provision');
-			perform(owner, repo, "provision");
+			perform(options, owner, repo, "provision");
 		} else {
 			console.log('default command vagrant up');
-			perform(owner, repo, "up");
+			perform(options, owner, repo, "up");
 		}
 	} else {
-		console.log('Usage options \n--o (for differennt output folder than working dir optional)  \n--repo (owner/repo for example pussinboots/vagrant-git mandatory) \n--up (to perform vagrant up default command optional) \n--prov (to perform vagrant provision optional)');
+		console.log('Usage options \n--g (https or git protocol git is default)\n--o (for differennt output folder than working dir optional)  \n--repo (owner/repo for example pussinboots/vagrant-git mandatory) \n--up (to perform vagrant up default command optional) \n--prov (to perform vagrant provision optional)');
 	}
 }
 module.exports = Cli;
