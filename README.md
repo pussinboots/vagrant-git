@@ -41,6 +41,10 @@ vgit --g https --repo pussinboots/softcover --up
 The --up option is optional the default vagrant command is up if no other is specified.
 The --g option is optional default is git and other value is https set the git protocol to use for git clone
 
+##Version
+
+* 0.0.2 3 hours of development and some error handling is missing also tests
+
 ##Project Configuration
 
 The main software project should contain the .vagrant.yml file on the project root like [softcover fork](https://github.com/pussinboots/softcover).
