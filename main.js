@@ -25,10 +25,29 @@ function fetchRepo(owner, repo, callback) {
   	}	
 }
 
-function getVagrantRepo(repo, format) {
-	var vagrantYml = yaml.load(repoFolder+repo +'/vagrant.yml');
+function getVagrantRepo(repo) {
+	var vagrantYml = yaml.load(repoFolder+repo +'/.vagrant.yml');
 	var vagrantRepo = vagrantYml.repo;
 	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
+}
+
+function getVGitYml(repo) {
+	return yaml.load(repoFolder+repo +'/.vgit.yml');
+}
+/*
+description: Ubuntu 14.04 Desktop version that install all development tools with an provisioner shell script.
+provision: shell
+hint: The first run of the provioner script with vagrant up will fail because oracle 8 jdk installation needs user interaction so if the virtualbox is started login and perform sudo apt-get -f install than wait until this installation is finished and start provision again with vgit --repo (project repo) --prov. To use npm perform su -l vagrant on the terminal.
+username: vagrant
+password: vagrant
+*/
+function displayVGitYml(repo) {
+	var vgitYml = getVGitYml(repo);
+	if (vgitYml.provision) console.log('provision: ' + vgitYml.provision + '\n')
+	if (vgitYml.description) console.log('description: ' + vgitYml.description + '\n')
+	if (vgitYml.hint) console.log('hint: ' + vgitYml.hint + '\n')
+	if (vgitYml.username) console.log('username: ' + vgitYml.username + '\n')
+	if (vgitYml.password) console.log('password: ' + vgitYml.password + '\n')
 }
 
 function perform(owner, repo, vagrantCmd) {
@@ -37,6 +56,7 @@ function perform(owner, repo, vagrantCmd) {
 		fetchRepo(vagrantRepo.owner, vagrantRepo.repo, function(repo){
 			var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder +repo, maxBuffer: 1024*1024}, function (error, stdout, stderr) { 			
 			});
+			displayVGitYml(repo);
 			//FIXME added file log
 			vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
 			vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
