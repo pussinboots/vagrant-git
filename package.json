@@ -1,6 +1,7 @@
 {
-  "name": "heroku-badge",
+  "name": "vagrant-git",
   "version": "0.0.1",
+  "description": "",
   "dependencies": {
     "minimist": "^0.2.0",
     "gift": "^0.4.2",
@@ -9,12 +10,23 @@
   "engines": {
     "node": "0.10.x"
   },
-  "scripts": { "test": "./node_modules/mocha/bin/mocha --timeout 60000 --reporter xunit-file" },
-  "devDependencies": {
-    "mocha": "^1.20.1",
-    "should": "^4.0.4",
-    "supertest": "^0.13.0",
-    "winston": "^0.7.3",
-    "xunit-file": "0.0.5"
-  }
+  "keywords": [
+    "vagrant",
+    "git"
+  ],
+  "main": "main.js",
+  "homepage": "https://github.com/pussinboots/vagrant-git",
+  "author": {
+    "name": "Frank Ittermann",
+    "email": "pussinboots666@googlemail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pussinboots/vagrant-git.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pussinboots/vagrant-git/issues"
+  },
+  "bin": { "vgit": "./bin/vgit.js" },
+  "license": "minimist"
 }
