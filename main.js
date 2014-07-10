@@ -45,13 +45,7 @@ function getVagrantRepo(repo) {
 function getVGitYml(repo) {
 	return yaml.load(repoFolder+repo +'/.vgit.yml');
 }
-/*
-description: Ubuntu 14.04 Desktop version that install all development tools with an provisioner shell script.
-provision: shell
-hint: The first run of the provioner script with vagrant up will fail because oracle 8 jdk installation needs user interaction so if the virtualbox is started login and perform sudo apt-get -f install than wait until this installation is finished and start provision again with vgit --repo (project repo) --prov. To use npm perform su -l vagrant on the terminal.
-username: vagrant
-password: vagrant
-*/
+
 function displayVGitYml(repo) {
 	var vgitYml = getVGitYml(repo);
 	if (vgitYml.provision) console.log('provision: ' + vgitYml.provision + '\n')
