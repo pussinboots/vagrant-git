@@ -6,22 +6,26 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var repoFolder = "./";
 
-function fetchRepo(owner, repo, callback) {
+function fetchRepo(owner, repo, type, callback) {
 	if (fs.existsSync(repoFolder +repo)) {
-		console.log('git pull on ' + repo);
+		console.log('git pull on ' + repo + ' ' + type);
 		var repository = git(repoFolder+repo);
-    	repository.pull('master', function(err, _repo) {
+    	var repoProcess = repository.pull('master', function(err, _repo) {
     		if(err) sys.puts(err);
     		if(callback)
     			callback(repo)
 	  	})
+	  	repoProcess.stdout.on('data', function(data) { process.stdout.write(data); });
+		repoProcess.stderr.on('data', function(data) { process.stderr.write(data); });
 	} else {
-		console.log('git clone https://github.com/' + owner + '/' + repo);
-		git.clone("https://github.com/" + owner+ "/" + repo, repo, function(err, _repo) {
+		console.log('git clone https://github.com/' + owner + '/' + repo + ' ' + type);
+		var cloneProcess = git.clone("https://github.com/" + owner+ "/" + repo, repo, function(err, _repo) {
 			if(err) sys.puts(err);
 			if(callback)
     			callback(repo)
 	  	})
+	  	cloneProcess.stdout.on('data', function(data) { process.stdout.write(data); });
+		cloneProcess.stderr.on('data', function(data) { process.stderr.write(data); });
   	}	
 }
 
@@ -51,16 +55,24 @@ function displayVGitYml(repo) {
 }
 
 function perform(owner, repo, vagrantCmd) {
-	fetchRepo(owner, repo, function(repo) {
+				console.log('####################### git output ##########################');
+	fetchRepo(owner, repo, 'project', function(repo) {
 		var vagrantRepo = getVagrantRepo(repo);
-		fetchRepo(vagrantRepo.owner, vagrantRepo.repo, function(repo){
+		fetchRepo(vagrantRepo.owner, vagrantRepo.repo, 'vagrant project', function(repo){
+			console.log('#############################################################');
+			console.log('##################### vagrant project info ##################');
+			displayVGitYml(repo);
+			console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
+			console.log('################ vagrant process output #####################');
 			var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder +repo, maxBuffer: 1024*1024}, function (error, stdout, stderr) { 			
 			});
-			displayVGitYml(repo);
 			//FIXME added file log
 			vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
 			vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
-			vagrant.on('close', function(code) { console.log('closing code: ' + code); });
+			vagrant.on('close', function(code) { 
+				console.log('##############################################################');
+				console.log('closing code: ' + code);
+			});
 		});
 	});
 }
