@@ -5,7 +5,7 @@ A very thiny nodejs script that perform a git sync (menas if pproject not checko
 ##Requirements
 * installed git command
 * installed vagrant command
-* installed vm provider depends on the vagrant box (like virtualbox)
+* installed vm provider depends on the vagrant box (for example virtualbox)
 
 ##Operating Systems
 
