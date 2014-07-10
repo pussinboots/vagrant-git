@@ -2,7 +2,7 @@
   "name": "heroku-badge",
   "version": "0.0.1",
   "dependencies": {
-    "exec-sync": "^0.1.6",
+    "minimist": "^0.2.0",
     "gift": "^0.4.2",
     "yamljs": "^0.1.5"
   },

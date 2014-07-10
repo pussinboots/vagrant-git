@@ -21,7 +21,8 @@ function fetchRepo(owner, repo, callback) {
 	} else {
 		console.log('git clone clone https://github.com/' + owner + '/' + repo);
 		git.clone("https://github.com/" + owner+ "/" + repo, repo, function(err, _repo) {
-	  		
+			sys.puts(err);
+			sys.puts(_repo);
 	  	})
   	}	
 }
@@ -32,22 +33,30 @@ function getVagrantRepo(repo, format) {
 	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
 }
 
-function validateFormat(request, callback) {
-	var format = FORMATS[request.parameters.format];
-	if(!format) {
-		 var error = new Error('invalid format: valid fomarts are pdf, epub, mobi or html.');
-	     error.statusCode = 400;
-	     return callback( error );
-	}
-	return format;
+var argv = require('minimist')(process.argv.slice(2));
+console.log('myArgs: ', argv);
+if (argv.repo) {
+	console.log('repo mode');
+	var owner = argv.repo.split('/')[0]
+	var repo = argv.repo.split('/')[1]
+	console.log('owner ' + owner + ' repo ' + repo);
+	fetchRepo(owner, repo, function(repo) {
+		var vagrantRepo = getVagrantRepo(repo);
+		fetchRepo(vagrantRepo.owner, vagrantRepo.repo, function(repo){
+			var vagrant = exec("vagrant up",{cwd: repoFolder +repo}, function (error, stdout, stderr) { 
+				sys.puts(stdout);
+				sys.puts(stderr);
+			});
+			vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
+		});
+	});
 }
 
-var myArgs = process.argv.slice(2);
-console.log('myArgs: ', myArgs);
-var owner = myArgs[0].split('/')[0]
-var repo = myArgs[0].split('/')[1]
-console.log('owner ' + owner + ' repo ' + repo);
-fetchRepo(owner, repo, function(repo) {
-	var vagrantRepo = getVagrantRepo(repo);
-	fetchRepo(vagrantRepo.owner, vagrantRepo.repo);
-});
+else if (argv.up) {
+	console.log('vagrant up');
+}
+else if (argv.provision) {
+	console.log('vagrant provision');
+}
+else if (argv.repo) {
+}
