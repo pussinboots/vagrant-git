@@ -26,6 +26,7 @@ npm install -g vagrant-git
 ```bash
 vgit [options]
 Usage options 
+--g (https or git protocol git is default)
 --o (for differennt output folder than working dir optional)  
 --repo (owner/repo for example pussinboots/vagrant-git mandatory) 
 --up (to perform vagrant up default command optional) 
