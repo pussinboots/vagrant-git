@@ -3,8 +3,9 @@
   "version": "0.0.2",
   "description": "",
   "dependencies": {
-    "minimist": "^0.2.0",
+    "fetch": "^0.3.6",
     "gift": "^0.4.2",
+    "minimist": "^0.2.0",
     "yamljs": "^0.1.5"
   },
   "engines": {
@@ -27,6 +28,8 @@
   "bugs": {
     "url": "https://github.com/pussinboots/vagrant-git/issues"
   },
-  "bin": { "vgit": "./bin/vgit.js" },
+  "bin": {
+    "vgit": "./bin/vgit.js"
+  },
   "license": "minimist"
 }
