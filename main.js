@@ -1,11 +1,13 @@
 var git  = require('gift');
 var yaml = require('yamljs');
-
+var fetchUrl = require("fetch").fetchUrl;
 var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
+
 var repoFolder = "./";
 var gitProtocolHttps="https://github.com/"
+var gitRaw = "https://raw.githubusercontent.com/"
 var gitProtocolGit="git@github.com:"
 
 function getGitProtocol(options) {
@@ -17,10 +19,10 @@ function getGitProtocol(options) {
 	return gitProtocolGit;
 }
 
-function fetchRepo(options, owner, repo, type, callback) {
+function fetchRepo(options, owner, repo, outputDir, type, callback) {
 	if (fs.existsSync(repoFolder +repo)) {
 		console.log('git pull on ' + repo + ' ' + type);
-		var repository = git(repoFolder+repo);
+		var repository = git(repoFolder + outputDir + repo);
     	repository.pull('master', function(err, _repo) {
     		if(err) sys.puts(err);
     		if(callback)
@@ -28,7 +30,7 @@ function fetchRepo(options, owner, repo, type, callback) {
 	  	})
 	} else {
 		console.log('git clone ' + getGitProtocol(options) + owner + '/' + repo + ' ' + type);
-		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, repo, function(err, _repo) {
+		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, outputDir, function(err, _repo) {
 			if(err) sys.puts(err);
 			if(callback)
     			callback(repo)
@@ -38,6 +40,12 @@ function fetchRepo(options, owner, repo, type, callback) {
 
 function getVagrantRepo(repo) {
 	var vagrantYml = yaml.load(repoFolder+repo +'/.vagrant.yml');
+	var vagrantRepo = vagrantYml.repo;
+	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
+}
+
+function getVagrantRepoFromString(ymlStr) {
+	var vagrantYml = yaml.parse(ymlStr);
 	var vagrantRepo = vagrantYml.repo;
 	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
 }
@@ -56,23 +64,27 @@ function displayVGitYml(repo) {
 }
 
 function perform(options, owner, repo, vagrantCmd) {
-				console.log('####################### git output ##########################');
-	fetchRepo(options, owner, repo, 'project', function(repo) {
-		var vagrantRepo = getVagrantRepo(repo);
-		fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, 'vagrant project', function(repo){
-			console.log('#############################################################');
-			console.log('##################### vagrant project info ##################');
-			displayVGitYml(repo);
-			console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
-			console.log('################ vagrant process output #####################');
-			var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder +repo, maxBuffer: 1024*1024}, function (error, stdout, stderr) { 			
-			});
-			//FIXME added file log
-			vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
-			vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
-			vagrant.on('close', function(code) { 
-				console.log('##############################################################');
-				console.log('closing code: ' + code);
+	console.log('####################### git output ##########################');
+	var url = gitRaw + owner + "/" + repo + "/master/.vagrant.yml"
+	fetchUrl(url, function(error, meta, body){
+	    console.log(body.toString());
+	    var vagrantRepo = getVagrantRepoFromString(body.toString());
+	    fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, '', 'vagrant project', function(_repo) {
+			fetchRepo(options, owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
+				console.log('#############################################################');
+				console.log('##################### vagrant project info ##################');
+				displayVGitYml(vagrantRepo.repo);
+				console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
+				console.log('################ vagrant process output #####################');
+				var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024}, function (error, stdout, stderr) { 			
+				});
+				//FIXME added file log
+				vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
+				vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
+				vagrant.on('close', function(code) { 
+					console.log('##############################################################');
+					console.log('closing code: ' + code);
+				});
 			});
 		});
 	});
