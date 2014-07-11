@@ -7,6 +7,11 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
 
+##Recommended
+* [vbguest](https://github.com/dotless-de/vagrant-vbguest) vagrant plugin to automaticly install virtualbox guest extension
+
+Install it in vagrant with ```vagrant plugin install vagrant-vbguest``` no configuration needed will install the actual virtualbox guest extension if they not already installed in the vm image.
+
 ##Operating Systems
 
 Tested on
