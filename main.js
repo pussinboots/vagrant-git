@@ -21,16 +21,16 @@ function getGitProtocol(options) {
 
 function fetchRepo(options, owner, repo, outputDir, type, callback) {
 	if (fs.existsSync(repoFolder +repo)) {
-		console.log('git pull on ' + repo + ' ' + type);
-		var repository = git(repoFolder + outputDir + repo);
+		console.log('git pull on ' + outputDir + '/' + repo + ' ' + type);
+		var repository = git(repoFolder + outputDir + '/' + repo);
     	repository.pull('master', function(err, _repo) {
     		if(err) sys.puts(err);
     		if(callback)
     			callback(repo)
 	  	})
 	} else {
-		console.log('git clone ' + getGitProtocol(options) + owner + '/' + repo + ' ' + type);
-		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, outputDir, function(err, _repo) {
+		console.log('git clone ' + getGitProtocol(options) + owner + '/' + repo + ' ' + type + ' into ' + outputDir + '/' + repo);
+		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, outputDir + '/' + repo, function(err, _repo) {
 			if(err) sys.puts(err);
 			if(callback)
     			callback(repo)
