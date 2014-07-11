@@ -1,6 +1,6 @@
 {
   "name": "vagrant-git",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "dependencies": {
     "fetch": "^0.3.6",
