@@ -6,6 +6,7 @@
     "fetch": "^0.3.6",
     "gift": "^0.4.2",
     "minimist": "^0.2.0",
+    "prompt": "^0.2.13",
     "yamljs": "^0.1.5"
   },
   "engines": {
