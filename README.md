@@ -103,7 +103,7 @@ deps:
     - rpm
     - createrepo
 ```
-The configuration above will passed as projectDependencies='java8;sbt;rpm;createrepo' so that is all what this tools does how to resolve and install this packages has to be down by the vagrant provision shell script or maybe other provisioner. I've a working example in my [sbt-rpm](https://github.com/pussinboots/sbt-rpm#Vagrant) project. At the moment the vagrant-devel vagrant setup supports only this four dependencies but will be more in the future for a list look in the [.vgit.yml](https://github.com/pussinboots/vagrant-devel/blob/master/.vgit.yml) file section packages.
+The configuration above will passed as ```projectDependencies='java8;sbt;rpm;createrepo'``` so that is all what this tools does how to resolve and install this packages has to be down by the vagrant provision shell script or maybe other provisioner. I've a working example in my [sbt-rpm](https://github.com/pussinboots/sbt-rpm#Vagrant) project. At the moment the vagrant-devel vagrant setup supports only this four dependencies but will be more in the future for a list look in the [.vgit.yml](https://github.com/pussinboots/vagrant-devel/blob/master/.vgit.yml) file section packages.
 
 ###Vagrant Box Configuration
 At the root path of the vagrant project there should exists a file called .vgit.yml.
