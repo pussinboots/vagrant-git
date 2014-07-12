@@ -6,8 +6,11 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 * installed git command
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
-* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail in the project folder that 
-    * Windows 7 Host run command line as administrator
+* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail with an error message like ```npm ERR! Error: ENOENT, lstat '/vagrant/node_modules/grunt/node_modules/glob/examples/usr-local.js'```
+    * Windows 7 Host
+      * run command line as administrator
+      * or change npm install behavoir with npm install --no-bin-links [described here](https://github.com/npm/npm/issues/5482)
+      * or copy the project out of the shared folder but than you lose the automatic git pull o
 
 ##Recommended
 * [vbguest](https://github.com/dotless-de/vagrant-vbguest) vagrant plugin to automaticly install virtualbox guest extension
@@ -15,6 +18,8 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 Install it in vagrant with ```vagrant plugin install vagrant-vbguest``` no configuration needed will install the actual virtualbox guest extension if they not already installed in the vm image.
 
 ##How it works
+
+First run do git clone if the project exist locally than git pull is performed instead.
 
 1. first look into the project .vagrant.yml file to resolve the vagrant github repo to clone
 2. clone the vagrant github repo 
