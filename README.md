@@ -6,7 +6,7 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 * installed git command
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
-* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail with an error message like ```npm ERR! Error: ENOENT, lstat '/vagrant/node_modules/grunt/node_modules/glob/examples/usr-local.js'``` if it is performed on the project folder inside the shared folder. In other words symlink could not be created in vagrant`s shared folder. 
+__* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail with an error message like__ ```npm ERR! Error: ENOENT, lstat '/vagrant/node-modules/grunt/node_modules/glob/examples/usr-local.js'``` if it is performed on the project folder inside the shared folder. In other words symlink could not be created in vagrant`s shared folder. 
     * solved on Windows 7 Host
       * run command line as administrator
       * or change npm install behavoir with npm install --no-bin-links [described here](https://github.com/npm/npm/issues/5482)
