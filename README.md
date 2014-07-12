@@ -6,11 +6,23 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 * installed git command
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
+* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail in the project folder that 
+    * Windows 7 Host run command line as administrator
 
 ##Recommended
 * [vbguest](https://github.com/dotless-de/vagrant-vbguest) vagrant plugin to automaticly install virtualbox guest extension
 
 Install it in vagrant with ```vagrant plugin install vagrant-vbguest``` no configuration needed will install the actual virtualbox guest extension if they not already installed in the vm image.
+
+##How it works
+
+1. first look into the project .vagrant.yml file to resolve the vagrant github repo to clone
+2. clone the vagrant github repo 
+3. than clone the specified --repo (owner/repo) on the command line into the vagrant github repo /project/(project repo name)
+4. Display content of the vagrant github repo file .vgit.yml
+5. perform vagrant up or provision depends on the command options
+
+Done
 
 ##Operating Systems
 
@@ -18,7 +30,10 @@ Tested on
 * Windows 7
 
 ##Todo
-* link the fetched github project to the vagrant box (no idea at the moment)
+* link the fetched github project to the vagrant box by perform git clone in the vagrant project folder that is automaticly shared by vagrant (done)
+* the project could specify more than one vagrant repo so that the user can decide which one he wants two scenarios
+    * complete vm image so no provisioner to run. Pros: faster to start Cons: bigger vm image to download
+    * small vm image all dependencies or most are installed with a provisioner Pros: slower to start Cons: smaller vm image to download
 
 ##Install
 
