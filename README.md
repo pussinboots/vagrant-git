@@ -38,7 +38,8 @@ Tested on
 * link the fetched github project to the vagrant box by perform git clone in the vagrant project folder that is automaticly shared by vagrant (done)
 * the project could specify more than one vagrant repo so that the user can decide which one he wants two scenarios
     * complete vm image so no provisioner to run. Pros: faster to start Cons: bigger vm image to download
-    * small vm image all dependencies or most are installed with a provisioner Pros: slower to start Cons: smaller vm image to download
+    * small vm image all dependencies or most are installed with a provisioner Pros: slower to start Cons: smaller vm image to download 
+  (done)
 
 ##Install
 
@@ -72,9 +73,15 @@ The --g option is optional default is git and other value is https set the git p
 
 ##Project Configuration
 
-The main software project should contain the .vagrant.yml file on the project root like [softcover fork](https://github.com/pussinboots/softcover).
+The main software project should contain the .vagrant.yml file on the project root like [softcover-nonstop fork](https://github.com/pussinboots/softcover).
 ```yml
 repo: pussinboots/vagrant-devel
+```
+or now it supports multiple repo defintion the user can choose one of them.
+```yml
+repo: 
+    - pussinboots/vagrant-devel-full
+    - pussinboots/vagrant-devel
 ```
 At the moment it contains only one line that point to the vagrant box project at github like this project [vagrant-devel](https://github.com/pussinboots/vagrant-devel).
 At the root path of the vagrant project there should exists a file called .vgit.yml.
