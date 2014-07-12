@@ -6,8 +6,8 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
 * installed git command
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
-* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail with an error message like ```npm ERR! Error: ENOENT, lstat '/vagrant/node_modules/grunt/node_modules/glob/examples/usr-local.js'```
-    * Windows 7 Host
+* symlink support on shared folders [discussion](https://github.com/mitchellh/vagrant/issues/713) otherwise npm install for example will fail with an error message like ```npm ERR! Error: ENOENT, lstat '/vagrant/node_modules/grunt/node_modules/glob/examples/usr-local.js'``` if it is performed on the project folder inside the shared folder. In other words symlink could not be created in vagrant`s shared folder. 
+    * solved on Windows 7 Host
       * run command line as administrator
       * or change npm install behavoir with npm install --no-bin-links [described here](https://github.com/npm/npm/issues/5482)
       * or copy the project out of the shared folder but than you lose the automatic git pull o
@@ -87,46 +87,64 @@ password: vagrant
 ```
 The content of this file will be display before vagrant command is performed so it should contains little description about the vagrant box maybe a hint that descripe steps they has to performed manual or given some advices. All fields are optionla but the file has to be exists at the moment. The field username and password should contains the used value for the vagrant box. That file will produce the following output at the command line. The different process outputs are separeted with a long line of # signs and the above values are display in the #################vagrant project info################ section to give the user some needful information. The below output is an example output on my Windows 7 machine. 
 ```bash
-C:\Users\frank\Downloads\vagrant-git>node bin/vgit.js --g https --repo pussinboots/softcover
-options:  { _: [], g: 'https', repo: 'pussinboots/softcover' }
+Z:\somewhere>node bin/vgit.js --g https --repo pussinboots/herok
+u-softcover
+options:  { _: [], g: 'https', repo: 'pussinboots/heroku-softcover' }
 repo mode
-owner pussinboots repo softcover
+owner pussinboots repo heroku-softcover
 default command vagrant up
 ####################### git output ##########################
-git pull on softcover project
-git pull on vagrant-devel vagrant project
+repo: pussinboots/vagrant-devel-full
+
+git pull on /vagrant-devel-full vagrant project
+From https://github.com/pussinboots/vagrant-devel-full
+ * branch            master     -> FETCH_HEAD
+error: Your local changes to the following files would be overwritten by merge:
+        Vagrantfile
+Please, commit your changes or stash them before you can merge.
+Aborting
+
+git pull on vagrant-devel-full/project/heroku-softcover project
+
 #############################################################
 ##################### vagrant project info ##################
-provision: shell
+description: Ubuntu 14.04 Desktop version contains all development tools needed
+for play 2.2.3, sbt 0.13.5 and nodejs ready to use.
 
-description: Ubuntu 14.04 Desktop version that install all development tools wit
-h an provisioner shell script.
-
-hint: The first run of the provioner script with vagrant up will fail because or
-acle 8 jdk installation needs user interaction so if the virtualbox is started l
-ogin and perform sudo apt-get -f install than wait until this installation is fi
-nished and start provision again with vgit --repo (project repo) --prov. To use
-npm perform su -l vagrant on the terminal.
+hint: The oracle jdk 8 installation is full automated and accept the license aut
+omated. To use npm perform su -l vagrant on the terminal. Maybe restart needed b
+ecause new profile.d scripts will be added they take effect after restart.
 
 username: vagrant
 
 password: vagrant
 
-start vagrant up in folder vagrant-devel
+start vagrant up in folder heroku-softcover
 ################ vagrant process output #####################
 Bringing machine 'default' up with 'virtualbox' provider...
-==> default: Box 'pussinboots/ubuntu-truly' could not be found. Attempting to fi
-nd and install...
-    default: Box Provider: virtualbox
-    default: Box Version: >= 0
-==> default: Loading metadata for box 'pussinboots/ubuntu-truly'
-    default: URL: https://vagrantcloud.com/pussinboots/ubuntu-truly
-The box you're attempting to add doesn't support the provider
-you requested. Please find an alternate box or use an alternate
-provider. Double-check your requested provider to verify you didn't
-simply misspell it.
-...
-..
-.
+==> default: Clearing any previously set forwarded ports...
+==> default: Clearing any previously set network interfaces...
+==> default: Preparing network interfaces based on configuration...
+    default: Adapter 1: nat
+==> default: Forwarding ports...
+    default: 22 => 2222 (adapter 1)
+==> default: Running 'pre-boot' VM customizations...
+==> default: Booting VM...
+==> default: Waiting for machine to boot. This may take a few minutes...
+    default: SSH address: 127.0.0.1:2222
+    default: SSH username: vagrant
+    default: SSH auth method: private key
+    default: Warning: Connection timeout. Retrying...
+==> default: Machine booted and ready!
+GuestAdditions 4.3.12 running --- OK.
+==> default: Checking for guest additions in VM...
+==> default: Mounting shared folders...
+    default: /vagrant => F:/fit/workspace/vagrant-git/vagrant-devel-full
+==> default: Machine already provisioned. Run `vagrant provision` or use the `--
+provision`
+==> default: to force provisioning. Provisioners marked to run always will still
+ run.
+##############################################################
+closing code: 0
 ```
 Is not the complete output here it should give you a example output.
