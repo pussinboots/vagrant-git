@@ -58,7 +58,7 @@ function getVagrantRepoFromString(ymlStr, callback) {
 			if (err) { return onErr(err); }
 			console.log('Command-line input received:');
 			console.log('choose Repo:' + result.repoNumber);
-			callback({owner:vagrantRepo[result.repoNumber].split('/')[0], repo:vagrantRepo[result.repoNumber].split('/')[1]});
+			callback({owner:vagrantRepo[result.repoNumber].split('/')[0], repo:vagrantRepo[result.repoNumber].split('/')[1], yaml: vagrantYml});
 		});
 
 		function onErr(err) {
@@ -66,7 +66,7 @@ function getVagrantRepoFromString(ymlStr, callback) {
 			return 1;
 		}
 	} else {
-		callback({owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]});
+		callback({owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1], yaml: vagrantYml});
 	}
 }
 
@@ -98,8 +98,18 @@ function perform(options, owner, repo, vagrantCmd) {
 	var url = gitRaw + owner + "/" + repo + "/master/.vagrant.yml"
 	console.log('.vagrant.yml url ' + url);
 	fetchUrl(url, function(error, meta, body){
-	    console.log('.vagrant.yml content: \n' + body.toString());
-	    getVagrantRepoFromString(body.toString(), function(vagrantRepo) {
+		console.log('####################### .vagrant.yml content ##########################');
+	    console.log(body.toString());
+		console.log('###################################################################');
+		getVagrantRepoFromString(body.toString(), function(vagrantRepo) {
+			var env = process.env;
+			console.log('####################### provision dependencies ##########################');
+			if (vagrantRepo.yaml.deps) {
+				env.projectDependencies = vagrantRepo.yaml.deps.join(';');
+				console.log('run provision for: ' + vagrantRepo.yaml.deps.join(';'));
+			}
+			else console.log('no provision dependencies specified');
+			console.log('###################################################################');
 			fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, '.', 'vagrant project', function(_repo) {
 				fetchRepo(options, owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
 					console.log('#############################################################');
@@ -107,7 +117,7 @@ function perform(options, owner, repo, vagrantCmd) {
 					displayVGitYml(vagrantRepo.repo);
 					console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
 					console.log('################ vagrant process output #####################');
-					var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024}, function (error, stdout, stderr) { 			
+					var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
 					});
 					//FIXME added file log
 					vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
