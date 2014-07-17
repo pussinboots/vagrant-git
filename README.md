@@ -43,7 +43,7 @@ Tested on
 
 ##Todo
 * add command line option to specify repo to use when project defines more than one to deactivate user input prompt
-* easy creation of .vagrant.yml files for an easy setupz of vagrant-git managed projects
+* easy creation of .vagrant.yml files for an easy setup of vagrant-git managed projects (can be achieved with packer and bento repo)
 
 ##Install
 
