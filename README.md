@@ -42,8 +42,9 @@ Tested on
 * support project based provisioning as esay as possible [example](https://github.com/pussinboots/sbt-rpm/blob/master/.vagrant.yml) but has to be implemented in the vagrant shell provision script [example](https://github.com/pussinboots/vagrant-devel/blob/master/provision/provision.sh) project base provisioning [commit](https://github.com/pussinboots/vagrant-devel/commit/04908d716904a1d31c8c4abc03c1ff8ec7ad103e)
 
 ##Todo
+* add integration tests that can be performed by travis ci
 * add command line option to specify repo to use when project defines more than one to deactivate user input prompt
-* easy creation of .vagrant.yml files for an easy setupz of vagrant-git managed projects
+* easy creation of .vagrant.yml files for an easy setup of vagrant-git managed projects (can be achieved with packer and bento repo)
 
 ##Install
 
