@@ -1,6 +1,7 @@
 #vagrant-git
 [![Build Status](https://travis-ci.org/pussinboots/vagrant-git.svg?branch=master)](https://travis-ci.org/pussinboots/vagrant-git)
 [![Unit Tests](https://unitcover.herokuapp.com/api/pussinboots/vagrant-git/badge)](https://unitcover.herokuapp.com/#/builds/pussinboots/vagrant-git/builds)
+[![NPM](https://nodei.co/npm/vagrant-git.png)](https://nodei.co/npm/vagrant-git/)
 
 [![Unit Tests](http://unitcover.herokuapp.com/api/pussinboots/vagrant-git/testsuites/badge)](https://unitcover.herokuapp.com/#/builds/pussinboots/vagrant-git/builds)
 
