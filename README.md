@@ -9,6 +9,7 @@
 A very thiny nodejs script that perform a git sync (means perform git clone or git pull depends if the project folder exists on the local machine) on the main project and depends on the file vagrant.yml it also perform git sync on the related vagrant git project and after all is fetched from git than it perform vagrant up or provision.
 
 ##Requirements
+* installed npm
 * installed git command
 * installed vagrant command
 * installed vm provider depends on the vagrant box (for example virtualbox)
@@ -51,6 +52,7 @@ Tested on
 * add integration tests that can be performed by travis ci
 * add command line option to specify repo to use when project defines more than one to deactivate user input prompt
 * easy creation of .vagrant.yml files for an easy setup of vagrant-git managed projects (can be achieved with packer and bento repo)
+* added support of github branches
 
 ##Install
 
