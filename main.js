@@ -45,10 +45,13 @@ function getVagrantRepo(repo) {
 	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
 }
 
-function getVagrantRepoFromString(ymlStr, callback) {
+function getVagrantRepoFromString(options, ymlStr, callback) {
 	var vagrantYml = yaml.parse(ymlStr);
 	var vagrantRepo = vagrantYml.repo;
 	if (typeof vagrantRepo === 'object') {
+		if(options.reponum >= 0) {
+			return callback({owner:vagrantRepo[options.reponum].split('/')[0], repo:vagrantRepo[options.reponum].split('/')[1], yaml: vagrantYml});
+		}
 		for(var i=0; i < vagrantRepo.length; i++) {
 			displayVGitYmlFromUrl(i, vagrantRepo[i].split('/')[0], vagrantRepo[i].split('/')[1]);
 		}
@@ -93,43 +96,48 @@ function displayVGitYml(repo) {
 	if (vgitYml.image) console.log('image: ' + vgitYml.image + '\n')
 }
 
-function perform(options, owner, repo, vagrantCmd) {
-	console.log('####################### git output ##########################');
-	var url = gitRaw + owner + "/" + repo + "/master/.vagrant.yml"
-	console.log('.vagrant.yml url ' + url);
-	fetchUrl(url, function(error, meta, body){
-		console.log('####################### .vagrant.yml content ##########################');
-	    console.log(body.toString());
-		console.log('###################################################################');
-		getVagrantRepoFromString(body.toString(), function(vagrantRepo) {
-			var env = process.env;
-			console.log('####################### provision dependencies ##########################');
-			if (vagrantRepo.yaml.deps) {
-				env.projectDependencies = vagrantRepo.yaml.deps.join(';');
-				console.log('run provision for: ' + vagrantRepo.yaml.deps.join(';'));
-			}
-			else console.log('no provision dependencies specified');
-			console.log('###################################################################');
-			fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, '.', 'vagrant project', function(_repo) {
-				fetchRepo(options, owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
-					console.log('#############################################################');
-					console.log('##################### vagrant project info ##################');
-					displayVGitYml(vagrantRepo.repo);
-					console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
-					console.log('################ vagrant process output #####################');
-					var vagrant = exec("vagrant " + vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
-					});
-					//FIXME added file log
-					vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
-					vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
-					vagrant.on('close', function(code) { 
-						console.log('##############################################################');
-						console.log('closing code: ' + code);
+function Process() {
+	return{
+		perform: function(options, owner, repo, vagrantCmd, finish) {
+			console.log('####################### git output ##########################');
+			var url = gitRaw + owner + "/" + repo + "/master/.vagrant.yml"
+			console.log('.vagrant.yml url ' + url);
+			fetchUrl(url, function(error, meta, body){
+				console.log('####################### .vagrant.yml content ##########################');
+			    console.log(body.toString());
+				console.log('###################################################################');
+				getVagrantRepoFromString(options, body.toString(), function(vagrantRepo) {
+					var env = process.env;
+					console.log('####################### provision dependencies ##########################');
+					if (vagrantRepo.yaml.deps) {
+						env.projectDependencies = vagrantRepo.yaml.deps.join(';');
+						console.log('run provision for: ' + vagrantRepo.yaml.deps.join(';'));
+					}
+					else console.log('no provision dependencies specified');
+					console.log('###################################################################');
+					fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, '.', 'vagrant project', function(_repo) {
+						fetchRepo(options, owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
+							console.log('#############################################################');
+							console.log('##################### vagrant project info ##################');
+							displayVGitYml(vagrantRepo.repo);
+							console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
+							console.log('################ vagrant process output #####################');
+							var vagrant = exec(vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
+							});
+							//FIXME added file log
+							vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
+							vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
+							vagrant.on('close', function(code) { 
+								console.log('##############################################################');
+								console.log('closing code: ' + code);
+								finish(code, env);
+							});
+						});
 					});
 				});
 			});
-		});
-	});
+		}
+	}
 }
 
 function Cli(argv) {
@@ -148,16 +156,17 @@ function Cli(argv) {
 		}
 		if (options.up) {
 			console.log('vagrant up');
-			perform(options, owner, repo, "up");
+			Process().perform(options, owner, repo, "vagrant up", function(code, env){});
 		} else if (options.prov) {
 			console.log('vagrant provision');
-			perform(options, owner, repo, "provision");
+			Process().perform(options, owner, repo, "vagrant provision", function(code, env){});
 		} else {
 			console.log('default command vagrant up');
-			perform(options, owner, repo, "up");
+			Process().perform(options, owner, repo, "vagrant up", function(code, env){});
 		}
 	} else {
 		console.log('Usage options \n--g (https or git protocol git is default)\n--o (for differennt output folder than working dir optional)  \n--repo (owner/repo for example pussinboots/vagrant-git mandatory) \n--up (to perform vagrant up default command optional) \n--prov (to perform vagrant provision optional)');
 	}
 }
 module.exports = Cli;
+module.exports = Process;
