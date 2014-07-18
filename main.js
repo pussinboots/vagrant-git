@@ -120,9 +120,10 @@ function Process() {
 							console.log('#############################################################');
 							console.log('##################### vagrant project info ##################');
 							displayVGitYml(vagrantRepo.repo);
-							console.log('start vagrant ' + vagrantCmd + ' in folder ' + repo);
+							console.log(vagrantCmd + ' in folder ' + repo);
 							console.log('################ vagrant process output #####################');
-							var vagrant = exec(vagrantCmd,{cwd: repoFolder + vagrantRepo.repo, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
+							var workingDirectory = repoFolder + vagrantRepo.repo;
+							var vagrant = exec(vagrantCmd,{cwd: workingDirectory, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
 							});
 							//FIXME added file log
 							vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
@@ -130,7 +131,7 @@ function Process() {
 							vagrant.on('close', function(code) { 
 								console.log('##############################################################');
 								console.log('closing code: ' + code);
-								finish(code, env);
+								finish(code, env, workingDirectory);
 							});
 						});
 					});
@@ -140,33 +141,4 @@ function Process() {
 	}
 }
 
-function Cli(argv) {
-	var options = require('minimist')(argv.slice(2));
-	console.log('options: ', options);
-	if (options.o) {
-		repoFolder=options.o
-	}
-	if (options.repo) {
-		console.log('repo mode');
-		var owner = options.repo.split('/')[0]
-		var repo = options.repo.split('/')[1]
-		console.log('owner ' + owner + ' repo ' + repo);
-		if (options.reponum) {
-			//todo implemnet passing repo number so that the prompt will not occur
-		}
-		if (options.up) {
-			console.log('vagrant up');
-			Process().perform(options, owner, repo, "vagrant up", function(code, env){});
-		} else if (options.prov) {
-			console.log('vagrant provision');
-			Process().perform(options, owner, repo, "vagrant provision", function(code, env){});
-		} else {
-			console.log('default command vagrant up');
-			Process().perform(options, owner, repo, "vagrant up", function(code, env){});
-		}
-	} else {
-		console.log('Usage options \n--g (https or git protocol git is default)\n--o (for differennt output folder than working dir optional)  \n--repo (owner/repo for example pussinboots/vagrant-git mandatory) \n--up (to perform vagrant up default command optional) \n--prov (to perform vagrant provision optional)');
-	}
-}
-module.exports = Cli;
 module.exports = Process;
