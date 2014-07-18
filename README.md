@@ -1,4 +1,8 @@
 #vagrant-git
+[![Build Status](https://travis-ci.org/pussinboots/vagrant-git.svg?branch=master)](https://travis-ci.org/pussinboots/vagrant-git)
+[![Unit Tests](https://unitcover.herokuapp.com/api/pussinboots/vagrant-git/badge)](https://unitcover.herokuapp.com/#/builds/pussinboots/vagrant-git/builds)
+
+[![Unit Tests](http://unitcover.herokuapp.com/api/pussinboots/vagrant-git/testsuites/badge)](https://unitcover.herokuapp.com/#/builds/pussinboots/vagrant-git/builds)
 
 A very thiny nodejs script that perform a git sync (means perform git clone or git pull depends if the project folder exists on the local machine) on the main project and depends on the file vagrant.yml it also perform git sync on the related vagrant git project and after all is fetched from git than it perform vagrant up or provision.
 
