@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+- 0.10
+after_failure:
+- wget -O - https://unitcover.herokuapp.com/scripts/upload.sh | bash /dev/stdin pussinboots vagrant-git "" "xunit.xml"
+after_success:
+- wget -O - https://unitcover.herokuapp.com/scripts/upload.sh | bash /dev/stdin pussinboots vagrant-git "" "xunit.xml"
