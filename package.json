@@ -1,7 +1,7 @@
 {
   "name": "vagrant-git",
-  "version": "0.0.6",
-  "description": "",
+  "version": "0.0.7",
+  "description": "Simple nodejs command that combine vagrant and git to fetch projects and related vagrant boxes for development.",
   "dependencies": {
     "fetch": "^0.3.6",
     "gift": "^0.4.2",
