@@ -1,43 +1,14 @@
 var prompt = require('prompt');
-var git  = require('gift');
 var yaml = require('yamljs');
-var fetchUrl = require("fetch").fetchUrl;
 var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
 
+var Fetcher = require("./fetcher");
+var Git  = require('./git');
+var Vagrant = require("./vagrant");
+
 var repoFolder = "./";
-var gitProtocolHttps="https://github.com/"
-var gitRaw = "https://raw.githubusercontent.com/"
-var gitProtocolGit="git@github.com:"
-
-function getGitProtocol(options) {
-	if (options.g)
-		if(options.g === "git")
-			return gitProtocolGit;
-		else if(options.g === "https")
-			return gitProtocolHttps;
-	return gitProtocolGit;
-}
-
-function fetchRepo(options, owner, repo, outputDir, type, callback) {
-	if (fs.existsSync(repoFolder+ outputDir + '/' +repo)) {
-		console.log('git pull on ' + outputDir + '/' + repo + ' ' + type);
-		var repository = git(repoFolder + outputDir + '/' + repo);
-    	repository.pull('master', function(err, _repo) {
-    		if(err) sys.puts(err);
-    		if(callback)
-    			callback(repo)
-	  	})
-	} else {
-		console.log('git clone ' + getGitProtocol(options) + owner + '/' + repo + ' ' + type + ' into ' + outputDir + '/' + repo);
-		var cloneProcess = git.clone(getGitProtocol(options)+ owner+ "/" + repo, outputDir + '/' + repo, function(err, _repo) {
-			if(err) sys.puts(err);
-			if(callback)
-    			callback(repo)
-	  	})
-  	}	
-}
 
 function getVagrantRepo(repo) {
 	var vagrantYml = yaml.load(repoFolder+repo +'/.vagrant.yml');
@@ -73,69 +44,42 @@ function getVagrantRepoFromString(options, ymlStr, callback) {
 	}
 }
 
-function getVGitYml(repo) {
-	return yaml.load(repoFolder+repo +'/.vgit.yml');
-}
-
 function displayVGitYmlFromUrl(repoNumber, owner, repo) {
-	var url = gitRaw + owner + "/" + repo + "/master/.vgit.yml";
-	console.log('.vgit.yml url ' + url);
-	fetchUrl(url, function(error, meta, body){
+	Fetcher.fetchVGitYaml(owner, repo, function(body){
 	    console.log('\nRepo: '+ ' ' + repoNumber + ' ' +owner+'/'+repo+' \n' + body.toString());
 	});
 }
-		
-function displayVGitYml(repo) {
-	var vgitYml = getVGitYml(repo);
-	if (vgitYml.provision) console.log('provision: ' + vgitYml.provision + '\n')
-	if (vgitYml.description) console.log('description: ' + vgitYml.description + '\n')
-	if (vgitYml.hint) console.log('hint: ' + vgitYml.hint + '\n')
-	if (vgitYml.username) console.log('username: ' + vgitYml.username + '\n')
-	if (vgitYml.password) console.log('password: ' + vgitYml.password + '\n')
-	if (vgitYml.size) console.log('size: ' + vgitYml.size + '\n')
-	if (vgitYml.image) console.log('image: ' + vgitYml.image + '\n')
+
+function gitAndVagrant(body, options, owner, repo, vagrantCmd, finish) {
+	console.log('####################### .vagrant.yml content ##########################');
+    console.log(body);
+	console.log('###################################################################');
+	getVagrantRepoFromString(options, body, function(vagrantRepo) {
+		var env = process.env;
+		console.log('####################### provision dependencies ##########################');
+		if (vagrantRepo.yaml.deps) {
+			env.projectDependencies = vagrantRepo.yaml.deps.join(';');
+			console.log('run provision for: ' + vagrantRepo.yaml.deps.join(';'));
+		}
+		else console.log('no provision dependencies specified');
+		console.log('###################################################################');
+		console.log(Git);
+		var GitHelper = new Git(options);
+		GitHelper.fetchRepos(vagrantCmd, vagrantRepo, owner, repo, env, finish, startVagrant);
+	});	
+}
+
+function startVagrant(vagrantCmd, vagrantRepo, owner, repo, env, finish) {
+	var VagrantHelper = new Vagrant(vagrantCmd, env);
+	VagrantHelper.vagrant(vagrantRepo, repo, finish);
 }
 
 function Process() {
 	return{
 		perform: function(options, owner, repo, vagrantCmd, finish) {
 			console.log('####################### git output ##########################');
-			var url = gitRaw + owner + "/" + repo + "/master/.vagrant.yml"
-			console.log('.vagrant.yml url ' + url);
-			fetchUrl(url, function(error, meta, body){
-				console.log('####################### .vagrant.yml content ##########################');
-			    console.log(body.toString());
-				console.log('###################################################################');
-				getVagrantRepoFromString(options, body.toString(), function(vagrantRepo) {
-					var env = process.env;
-					console.log('####################### provision dependencies ##########################');
-					if (vagrantRepo.yaml.deps) {
-						env.projectDependencies = vagrantRepo.yaml.deps.join(';');
-						console.log('run provision for: ' + vagrantRepo.yaml.deps.join(';'));
-					}
-					else console.log('no provision dependencies specified');
-					console.log('###################################################################');
-					fetchRepo(options, vagrantRepo.owner, vagrantRepo.repo, '.', 'vagrant project', function(_repo) {
-						fetchRepo(options, owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
-							console.log('#############################################################');
-							console.log('##################### vagrant project info ##################');
-							displayVGitYml(vagrantRepo.repo);
-							console.log(vagrantCmd + ' in folder ' + repo);
-							console.log('################ vagrant process output #####################');
-							var workingDirectory = repoFolder + vagrantRepo.repo;
-							var vagrant = exec(vagrantCmd,{cwd: workingDirectory, maxBuffer: 1024*1024, env:env}, function (error, stdout, stderr) { 			
-							});
-							//FIXME added file log
-							vagrant.stdout.on('data', function(data) { process.stdout.write(data); });
-							vagrant.stderr.on('data', function(data) { process.stderr.write(data); });
-							vagrant.on('close', function(code) { 
-								console.log('##############################################################');
-								console.log('closing code: ' + code);
-								finish(code, env, workingDirectory);
-							});
-						});
-					});
-				});
+			Fetcher.fetchVagrantYaml(owner, repo, function(body){
+				gitAndVagrant(body, options, owner, repo, vagrantCmd, finish);
 			});
 		}
 	}
