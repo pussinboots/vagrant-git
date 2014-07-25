@@ -41,11 +41,11 @@ Clazz.fetchRepo = function (owner, repo, outputDir, type, callback) {
   	}	
 }
 
-Clazz.fetchRepos = function(vagrantCmd, vagrantRepo, owner, repo, env, finish, callback) {
+Clazz.fetchRepos = function(vagrantCmd, vagrantRepo, projectRepo, env, finish, callback) {
 	var self = this;
 	this.fetchRepo(vagrantRepo.owner, vagrantRepo.repo, '.', 'vagrant project', function(_repo) {
-		self.fetchRepo(owner, repo, vagrantRepo.repo + "/project", 'project', function(_repo){
-			callback(vagrantCmd, vagrantRepo, owner, repo, env, finish)
+		self.fetchRepo(projectRepo.owner, projectRepo.repo, vagrantRepo.repo + "/project", 'project', function(_repo){
+			callback(vagrantCmd, vagrantRepo, projectRepo, env, finish)
 		});
 	});	
 }

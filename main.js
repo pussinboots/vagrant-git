@@ -56,13 +56,13 @@ function gitAndVagrant(body, options, owner, repo, vagrantCmd, finish) {
 		console.log('###################################################################');
 		console.log(Git);
 		var GitHelper = new Git(options);
-		GitHelper.fetchRepos(vagrantCmd, vagrantRepo, owner, repo, env, finish, startVagrant);
+		GitHelper.fetchRepos(vagrantCmd, vagrantRepo, {owner:owner, repo:repo}, env, finish, startVagrant);
 	});	
 }
 
-function startVagrant(vagrantCmd, vagrantRepo, owner, repo, env, finish) {
+function startVagrant(vagrantCmd, vagrantRepo, projectRepo, env, finish) {
 	var VagrantHelper = new Vagrant(vagrantCmd, env);
-	VagrantHelper.vagrant(vagrantRepo, repo, finish);
+	VagrantHelper.vagrant(vagrantRepo, projectRepo, finish);
 }
 
 function Process() {

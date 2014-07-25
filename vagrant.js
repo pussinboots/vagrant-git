@@ -34,12 +34,12 @@ Clazz.displayVGitYml = function(repo) {
 	if (vgitYml.image) console.log('image: ' + vgitYml.image + '\n')
 }
 
-Clazz.vagrant = function(vagrantRepo, repo, finish) {
+Clazz.vagrant = function(vagrantRepo, projectRepo, finish) {
 	var self = this;
 	console.log('#############################################################');
 	console.log('##################### vagrant project info ##################');
 	this.displayVGitYml(vagrantRepo.repo);
-	console.log(this.vagrantCmd + ' in folder ' + repo);
+	console.log(this.vagrantCmd + ' in folder ' + projectRepo.repo);
 	console.log('################ vagrant process output #####################');
 	var workingDirectory = repoFolder + vagrantRepo.repo;
 	var vagrant = exec(this.vagrantCmd,{cwd: workingDirectory, maxBuffer: 1024*1024, env:this.env}, function (error, stdout, stderr) { 			
