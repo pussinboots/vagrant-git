@@ -1,20 +1,11 @@
 var prompt = require('prompt');
 var yaml = require('yamljs');
-var fs = require('fs');
-var sys = require('sys');
-var exec = require('child_process').exec;
 
 var Fetcher = require("./fetcher");
 var Git  = require('./git');
 var Vagrant = require("./vagrant");
 
 var repoFolder = "./";
-
-function getVagrantRepo(repo) {
-	var vagrantYml = yaml.load(repoFolder+repo +'/.vagrant.yml');
-	var vagrantRepo = vagrantYml.repo;
-	return {owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1]};
-}
 
 function getVagrantRepoFromString(options, ymlStr, callback) {
 	var vagrantYml = yaml.parse(ymlStr);
