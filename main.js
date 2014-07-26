@@ -8,6 +8,11 @@ var Vagrant = require("./vagrant");
 
 var repoFolder = "./";
 
+function onErr(err) {
+    console.log(err);
+    return 1;
+}
+
 function getVagrantRepoFromString(options, ymlStr, callback) {
     var vagrantYml = yaml.parse(ymlStr),
         vagrantRepo = vagrantYml.repo;
@@ -26,11 +31,6 @@ function getVagrantRepoFromString(options, ymlStr, callback) {
             console.log('choose Repo:' + result.repoNumber);
             callback({owner:vagrantRepo[result.repoNumber].split('/')[0], repo:vagrantRepo[result.repoNumber].split('/')[1], yaml: vagrantYml});
         });
-
-        function onErr(err) {
-            console.log(err);
-            return 1;
-        }
     } else {
         callback({owner:vagrantRepo.split('/')[0], repo:vagrantRepo.split('/')[1], yaml: vagrantYml});
     }
