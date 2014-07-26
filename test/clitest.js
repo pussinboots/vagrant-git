@@ -5,7 +5,7 @@ var assert = require('assert');
 
 describe('vgit', function() {
   	describe('cli', function() {
- 	    it('should checkout vagrant-git project and vagrant-devel-full', function(done){
+ 	    it('should checkout vagrant-git and vagrant-devel-full project', function(done){
  	    	Cli(['test', './', '--g', 'https', '--repo', 'pussinboots/vagrant-git', '--reponum', '0','--echo'], function(code, env) {
 	          should(code).eql(0,'should have exit code zero');
 	          should(fs.existsSync("./vagrant-devel-full")).eql(true, "vagrant-devel-full folder should exists");
