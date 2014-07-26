@@ -1,4 +1,4 @@
-var Process = require('../main.js');
+var Process = require('../lib/main.js');
 var fs = require('fs');
 var should = require('should');
 var assert = require('assert');

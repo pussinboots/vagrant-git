@@ -1,4 +1,4 @@
-var Cli = require('../cli.js')
+var Cli = require('../lib/cli.js')
 var fs = require('fs');
 var should = require('should');
 var assert = require('assert');

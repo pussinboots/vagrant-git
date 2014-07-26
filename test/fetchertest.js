@@ -1,4 +1,4 @@
-var Fetcher = require('../fetcher.js')
+var Fetcher = require('../lib/fetcher.js')
 var should = require('should');
 var assert = require('assert');
 
