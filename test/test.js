@@ -25,7 +25,7 @@ describe('vgit main', function() {
 	describe('vagrant', function() {
  	    it('should passing projectDependencies as environment variable to vagrant that are defined in the project .vagrant.yml file', function(done){
         	Process().perform({g:"https",reponum:0}, "pussinboots", "vagrant-git", "echo 'start vagrant'", function(code, env, workingDirectory) {
-        	  should(env.projectDependencies).eql('java8;sublime3;sbt;rpm;createrepo', 'should have exit code zero');
+        	  should(env.projectDependencies).eql('java8;sublime3;sbt', 'should have exit code zero');
 	          done();
         	});
 	    });
