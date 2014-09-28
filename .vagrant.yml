@@ -6,5 +6,3 @@ deps:
     - java8
     - sublime3
     - sbt
-    - rpm
-    - createrepo
