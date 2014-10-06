@@ -82,6 +82,11 @@ The --g option is optional default is git and other value is https set the git p
 
 ##Version
 
+* 0.0.7 added support for https protocol to perform git clone so you can avoid the requirement of an public key. Very helpful for windows operating systems.
+* 0.0.6 clean up.
+* 0.0.5 support configuration of multiple vagrant runtime repos per project. For an example [see] (https://github.com/pussinboots/sbt-rpm)
+* 0.0.4 perform git clone of the project repo into the cloned vagrant runtime repo folder 
+* 0.0.3 added debug log message display in the console
 * 0.0.2 3 hours of development and some error handling is missing also tests
 
 ##Project Configuration
