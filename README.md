@@ -9,7 +9,7 @@
 
 A very thiny nodejs script that perform a git sync (means perform git clone or git pull depends if the project folder exists on the local machine) on the main project and depends on the file vagrant.yml it also perform git sync on the related vagrant git project and after all is fetched from git than it perform vagrant up or provision.
 
-##Requirements
+## Requirements
 * installed npm
 * installed git command
 * installed vagrant command
@@ -20,12 +20,12 @@ A very thiny nodejs script that perform a git sync (means perform git clone or g
       * or change npm install behavoir with npm install --no-bin-links [described here](https://github.com/npm/npm/issues/5482)
       * or copy the project out of the shared folder but than you lose the automatic git pull o
 
-##Recommended
+## Recommended
 * [vbguest](https://github.com/dotless-de/vagrant-vbguest) vagrant plugin to automaticly install virtualbox guest extension
 
 Install it in vagrant with ```vagrant plugin install vagrant-vbguest``` no configuration needed will install the actual virtualbox guest extension if they not already installed in the vm image.
 
-##How it works
+## How it works
 
 First run do git clone if the project exist locally than git pull is performed instead.
 
@@ -37,31 +37,31 @@ First run do git clone if the project exist locally than git pull is performed i
 
 Done
 
-##Operating Systems
+## Operating Systems
 
 Tested on
 * Windows 7
 
-##Features
+## Features
 * link the fetched github project to the vagrant box by perform git clone in the vagrant project folder that is automaticly shared by vagrant
 * the project could specify more than one vagrant repo so that the user can decide which one he wants two scenarios
     * complete vm image so no provisioner to run. Pros: faster to start Cons: bigger vm image to download
     * small vm image all dependencies or most are installed with a provisioner Pros: slower to start Cons: smaller vm image to download
 * support project based provisioning as esay as possible [example](https://github.com/pussinboots/sbt-rpm/blob/master/.vagrant.yml) but has to be implemented in the vagrant shell provision script [example](https://github.com/pussinboots/vagrant-devel/blob/master/provision/provision.sh) project base provisioning [commit](https://github.com/pussinboots/vagrant-devel/commit/04908d716904a1d31c8c4abc03c1ff8ec7ad103e)
 
-##Todo
+## Todo
 * add integration tests that can be performed by travis ci
 * add command line option to specify repo to use when project defines more than one to deactivate user input prompt
 * easy creation of .vagrant.yml files for an easy setup of vagrant-git managed projects (can be achieved with packer and bento repo)
 * added support of github branches
 
-##Install
+## Install
 
 ```bash
 npm install -g vagrant-git
 ```
 
-##Usage
+## Usage
 
 ```bash
 vgit [options]
@@ -81,7 +81,7 @@ vgit --g https --repo pussinboots/softcover --up
 The --up option is optional the default vagrant command is up if no other is specified.
 The --g option is optional default is git and other value is https set the git protocol to use for git clone
 
-##Version
+## Version
 
 * 0.0.7 added support for https protocol to perform git clone so you can avoid the requirement of an public key. Very helpful for windows operating systems.
 * 0.0.6 clean up.
@@ -90,10 +90,10 @@ The --g option is optional default is git and other value is https set the git p
 * 0.0.3 added debug log message display in the console
 * 0.0.2 3 hours of development and some error handling is missing also tests
 
-##Project Configuration
+## Project Configuration
 
 
-###Vagrant Repo
+### Vagrant Repo
 
 The main software project should contain the .vagrant.yml file on the project root like [softcover-nonstop fork](https://github.com/pussinboots/softcover).
 ```yml
@@ -108,7 +108,7 @@ repo:
 The confiuration above points to the [vagrant-devel](https://github.com/pussinboots/vagrant-devel) and [vagrant-devel-full](https://github.com/pussinboots/vagrant-devel-full) repos. This repos contains the vagrant specific configuration but not the base box. It is hosted by dropbox, tried with google drive but failed because it is not possible to get a working permalink to the base box files. The base boxes are registered by [vagrantcloud vagrant-devel](https://vagrantcloud.com/pussinboots/ubuntu-truly)
 [vagrantcloud vagrant-devel-full](https://vagrantcloud.com/pussinboots/ubuntu-truly-full) this service offer the possibility to use this registered base boxes directly in the Vagrantfile with just a short name for vagrant-devel base box the Vagrantfile will look like this ```config.vm.box = "pussinboots/ubuntu-truly"```. 
 
-###Project Runtime or Development Dependencies
+### Project Runtime or Development Dependencies
 
 If the referenced vagrant box project support dynamic shell script provision like [vagrant-devel](https://github.com/pussinboots/vagrant-devel) does than you can specify what packages the shell provisioner should install. The defined deps here will be passed to vagrant as projectDependency environment variable as one string with delimiter ';' 
 ```yml
@@ -120,7 +120,7 @@ deps:
 ```
 The configuration above will passed as ```projectDependencies='java8;sbt;rpm;createrepo'``` so that is all what this tools does how to resolve and install this packages has to be down by the vagrant provision shell script or maybe other provisioner. I've a working example in my [sbt-rpm](https://github.com/pussinboots/sbt-rpm#Vagrant) project. At the moment the vagrant-devel vagrant setup supports only this four dependencies but will be more in the future for a list look in the [.vgit.yml](https://github.com/pussinboots/vagrant-devel/blob/master/.vgit.yml) file section packages.
 
-###Vagrant Box Configuration
+### Vagrant Box Configuration
 At the root path of the vagrant project there should exists a file called .vgit.yml.
 ```yml
 description: Ubuntu 14.04 Desktop version that install all development tools with an provisioner shell script.
@@ -194,13 +194,13 @@ closing code: 0
 ```
 Is not the complete output here it should give you a example output.
 
-##Development and Contribution
+## Development and Contribution
 
 At the moment there is no Travis Build and no Test, i will plan to implements some integration tests and after that i will enable travis build but feel free to contribute now. Also you can share your ideas about vagrant and the this tool with me of course. It is a very simple nodejs command line tool with a little bit more than 100 lines of code but you can feel possibilities right now by using it. 
 
 Contributors are welcomed this project starts as a little script to get some automation to speedup project development by fetching related vagrant development environments to get all what is need to rund and develop this project with just one command. Its just a side project of my and to be honest i have not so much time but i will see how i could arrange this. I start to use it for my daily work. For the vagrant and provision related part look at the [vagrant-devel](https://github.com/pussinboots/vagrant-devel/) project.
 
-###Requirements
+### Requirements
 
 * nodejs 0.10.x
 
@@ -209,6 +209,6 @@ If you want to perform a test run than also the runtime dependencies are needed
 * installed vagrant command
 * installed vm provider (like virtualbox)
 
-##License 
+## License 
 
 vagrant-git is released under the [MIT License](http://opensource.org/licenses/MIT).
